@@ -1,0 +1,213 @@
+#!/usr/bin/env bash
+
+which rosbag > /dev/null
+if [[ $? -ne 0 ]]
+then
+    echo -e "FATAL: rosbag not found! Please install or reinstall ROS!"
+    exit 1
+fi
+
+BASE_DIR="${PWD}"
+RUN_DIR="${PWD}"
+TOPIC_LIST_FILE="topics.filter"
+
+topic_index=0
+
+HAVE_TOPICS=0
+HAVE_TOPIC_LIST=0
+
+FORCE_REPLACE=0
+
+while getopts ":d:t:c:r" optindex
+do
+    case ${optindex} in
+        d ) 
+            BASE_DIR="${OPTARG}"
+        ;;
+        t )
+            topics[${topic_index}]="${OPTARG}"
+            topic_index=$((${topic_index} + 1))
+            HAVE_TOPICS=1
+        ;;
+        c )
+            TOPIC_LIST_FILE="${OPTARG}"
+            if [[ -f "${TOPIC_LIST_FILE}" ]]
+            then
+                HAVE_TOPIC_LIST=1
+            fi
+        ;;
+        r ) 
+            FORCE_REPLACE=1
+        ;;
+        * )
+            echo -e "Unknown option \"${OPTARG}\""
+        ;;
+    esac
+done
+
+echo -e "Running from directory ${BASE_DIR}"
+
+cd "${BASE_DIR}"
+
+count=1
+index=0
+for f in *.bag
+do
+    files[${index}]=${count}
+    files[$((${index} + 1))]="${BASE_DIR}/${f}"
+    count=$((${count} + 1))
+    index=$((${index} + 2))
+done
+
+BAGLIST=`echo -e "${files[@]}"`
+
+SELECTED_BAG_INDEX=`whiptail --title "Please choose ROS bag file to filter" --menu "Files found in ${BASE_DIR}" 15 60 4 ${BAGLIST} 3>&1 1>&2 2>&3`
+errorcode=$?
+if [[ ${errorcode} -ne 0 ]]
+then
+     echo -e "No selection was made. Abort"
+     cd "${RUN_DIR}"
+     exit 1
+fi
+SELECTED_BAG_NAME="${files[$(( (${SELECTED_BAG_INDEX} * 2) - 1))]}"
+FILTERED_BAG_NAME=`echo -e "${SELECTED_BAG_NAME}" | sed -e 's/\.bag$/\.filtered\.bag/'`
+
+NEW_FILTERED_BAG_NAME=`whiptail --title  "File name for filtered output" --inputbox  "Please enter filename for filtered output" 10 60 "${FILTERED_BAG_NAME}" 3>&1 1>&2 2>&3`
+errorcode=$?
+if [[ -z "${NEW_FILTERED_BAG_NAME}" || "${NEW_FILTERED_BAG_NAME}" == "${SELECTED_BAG_NAME}" ]]
+then
+     echo -e "ERROR: uncorrect output file name! Abort"
+     cd "${RUN_DIR}"
+     exit 1
+else
+    FILTERED_BAG_NAME="${NEW_FILTERED_BAG_NAME}"
+fi
+
+if [[ -f "${FILTERED_BAG_NAME}" ]]
+then
+    if [[ ${FORCE_REPLACE} -eq 1 ]]
+    then
+        rm -rvf "${FILTERED_BAG_NAME}"
+    else
+        echo -e "FATAL: the filtered bag file ${FILTERED_BAG_NAME} exists when '-r' option is undefined. Abort"
+        cd "${RUN_DIR}"
+        exit 1
+    fi
+fi
+
+echo -e "Processing file ${SELECTED_BAG_NAME} into ${FILTERED_BAG_NAME}"
+rosbag info "${SELECTED_BAG_NAME}" > /dev/null
+if [[ $? -ne 0 ]]
+then
+    echo -e "ERROR: the selected bag file ${SELECTED_BAG_NAME} is corrupt or malformed. Abort"
+    cd "${RUN_DIR}"
+    exit 1
+fi
+echo -e "Reading ${SELECTED_BAG_NAME}..."
+internal_topics=`rosbag info "${SELECTED_BAG_NAME}" -y -k "topics" | grep "topic" | sed -e 's/^.*topic\:\ *//' | xargs | sed -e 's/ /\ /g'`
+
+internal_topic_list=(${internal_topics})
+internal_topic_list_length="${#internal_topic_list[@]}"
+
+if [[ ${HAVE_TOPICS} -eq 1 || ${HAVE_TOPIC_LIST} -eq 1 ]]
+then
+    if [[ -f "${TOPIC_LIST_FILE}" ]]
+    then
+        echo -e "Found topic list: ${TOPIC_LIST_FILE}"
+        while read LINE
+        do
+            if [[ ! " ${topics[@]} " =~ " ${LINE} " ]]
+            then
+                topics[${topic_index}]="${LINE}"
+                topic_index=$((${topic_index} + 1))
+            fi
+        done < "${TOPIC_LIST_FILE}"
+    fi
+fi
+
+topic_list_string=""
+topic_list_length="${#topics[@]}"
+echo -e "Preparing ${FILTERED_BAG_NAME}..."
+echo -e "Traversing ${topic_list_length} manually listed topics, ${internal_topic_list_length} topics extracted from original bag file"
+
+count=0
+for ((i=0; i < "${#topics[@]}"; i++))
+do
+    if [[ " ${internal_topic_list[@]} " =~ " ${topics[i]} " ]]
+    then
+        result_topic_list[${count}]="${topics[i]}"
+        count=$((${count} + 1))
+    else
+        echo -e "WARNING! Topic ${topics[i]} can not be filtered because it is not exist in the original bag file!"
+    fi
+done
+
+for ((i=0; i < "${#internal_topic_list[@]}"; i++))
+do
+    if [[ ! " ${result_topic_list[@]} " =~ " ${internal_topic_list[i]} " ]]
+    then
+        result_topic_list[${count}]="${internal_topic_list[i]}"
+        count=$((${count} + 1))
+    fi
+done
+
+for ((i=0; i < "${#result_topic_list[@]}"; i++))
+do
+    if [[ " ${topics[@]} " =~ " ${result_topic_list[i]} " ]]
+    then
+        topic_list_string="${topic_list_string} ${i} ${result_topic_list[i]} ON"
+    else
+        topic_list_string="${topic_list_string} ${i} ${result_topic_list[i]} OFF"
+    fi
+done
+
+topic_list_string=`echo -e "${topic_list_string}" | sed -e 's/^[[:blank:]]*//'`
+
+selected_topics=`whiptail --title "Please choose ROS topic names to filter" --checklist "${SELECTED_BAG_NAME} available topics" 25 80 14 ${topic_list_string} 3>&1 1>&2 2>&3 | sed -e 's/\"//g'`
+errorcode=$?
+if [[ ${errorcode} -ne 0 || -z "${selected_topics}" ]]
+then
+     echo -e "No selection was made. Abort"
+     cd "${RUN_DIR}"
+     exit 1
+fi
+
+selected_topic_list=(${selected_topics})
+
+echo -e "${selected_topic_list[@]}"
+
+whiptail --yesno --defaultno --title "Topic list preservation" "Do you want to save the list of selected topics" 0 0 3>&1 1>&2 2>&3
+save_topic_list=$?
+if [[ ${save_topic_list} -eq 0 ]]
+then
+    NEW_TOPIC_LIST_FILE=`whiptail --title  "File name for topic list" --inputbox  "Please enter filename for topic list" 10 60 "${TOPIC_LIST_FILE}" 3>&1 1>&2 2>&3`
+    errorcode=$?
+    if [[ -z "${NEW_TOPIC_LIST_FILE}" || "${NEW_TOPIC_LIST_FILE}" == "${TOPIC_LIST_FILE}" ]]
+    then
+        echo -e "WARNING: wrong filename for topic list to save. Saving to default ${TOPIC_LIST_FILE}"
+    else
+        TOPIC_LIST_FILE="${NEW_TOPIC_LIST_FILE}"
+    fi
+    if [[ -f "${TOPIC_LIST_FILE}" ]]
+    then
+        rm -rvf "${TOPIC_LIST_FILE}"
+    fi
+    for ((i=0; i < "${#selected_topic_list[@]}"; i++))
+    do
+        echo -e "${result_topic_list[ ${selected_topic_list[i]} ]}" >> "${TOPIC_LIST_FILE}"
+    done
+fi
+
+filter_string=""
+for ((i=0; i < "${#selected_topic_list[@]}"; i++))
+do
+    selected_topic="${result_topic_list[ ${selected_topic_list[i]} ]}"
+    filter_string="${filter_string} topic == '${selected_topic}' or"
+done
+filter_string=`echo -e "${filter_string}" | sed -e 's/^[[:blank:]]*//;s/[[:blank:]]or$//'`
+
+rosbag filter "${SELECTED_BAG_NAME}" "${FILTERED_BAG_NAME}" "${filter_string}"
+
+cd "${RUN_DIR}"
+exit 0
+

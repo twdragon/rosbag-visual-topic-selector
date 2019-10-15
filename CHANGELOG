@@ -1,0 +1,4 @@
+rosbag_visual_topic_filter (1.0.3) all; urgency=medium
+  * Added topic list preservation function
+ -- twdragon <twdragon@bmstu.ru>  Sun, 14 Oct 2019 14:50:19 +0300
+
