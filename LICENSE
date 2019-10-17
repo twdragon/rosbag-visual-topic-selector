@@ -1,7 +1,9 @@
 MIT License
 
 Copyright (c) 2019 Robotic Center of Education and Research, 
-    Bauman Moscow State Technical University
+    Bauman Moscow State Technical University,
+    Andrei Vukolov <twdragon@bmstu.ru>
+    (based on tool developed by Alexander Tachkov)
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

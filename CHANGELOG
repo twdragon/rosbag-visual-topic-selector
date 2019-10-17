@@ -1,3 +1,10 @@
+rosbag_visual_topic_filter (1.0.4) all; urgency=high
+  * Correction to list file CANCEL switch behaviour
+  * Removed printing of selected topic list indexes
+  * Added README in English
+  * Fixed License file
+  * Preparation for .deb package building
+ -- twdragon <twdragon@bmstu.ru>  Thu, 17 Oct 2019 19:46:19 +0300
 rosbag_visual_topic_filter (1.0.3) all; urgency=medium
   * Added topic list preservation function
  -- twdragon <twdragon@bmstu.ru>  Sun, 14 Oct 2019 14:50:19 +0300
