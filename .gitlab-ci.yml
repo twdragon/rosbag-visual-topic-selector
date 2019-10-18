@@ -30,8 +30,7 @@ stages:
 
 package-indigo:
     extends: .package
-    only:
-        variables:
-            - ROS_DISTRO: indigo
+    variables:
+        ROS_DISTRO: indigo
 
 
