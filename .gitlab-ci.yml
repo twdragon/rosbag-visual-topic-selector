@@ -54,4 +54,4 @@ collect:
         paths:
             - "*.deb"
     script:
-        - for f in *.deb ; do lintian ${f} ; done
+        - ls -lh
