@@ -3,9 +3,11 @@ Version: VERSION_STRING
 Provides: rosbag-visual-topic-selector
 Maintainer: Andrei Vukolov <twdragon@bmstu.ru>
 Architecture: all
-Section: ros
+Section: misc
+Priority: extra
 Depends: whiptail, ros-ROS_DISTRIBUTION_NAME-rosbag
 Installed-Size: 20
 Priority: optional
 Description: Visual ROS bag filtering tool
+  Script allowing user to produce filtered .bag files for ROS in seconds
 

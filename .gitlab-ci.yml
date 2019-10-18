@@ -23,6 +23,7 @@ stages:
         - cp -v "./LICENSE" "${VERSIONED_DIR}/usr/share/doc/rosbag-visual-topic-selector/copyright"
         - cp -v "./README.md" "${VERSIONED_DIR}/usr/share/doc/rosbag-visual-topic-selector"
         - cp -av "./rosbag_visual_topic_filter" "${VERSIONED_DIR}/opt/ros/${ROS_DISTRIBUTION_NAME}/rosbag-visual-topic-selector"
+        - chmod -v 755 "${VERSIONED_DIR}/opt/ros/${ROS_DISTRIBUTION_NAME}/rosbag-visual-topic-selector"
         - cd "${VERSIONED_DIR}"
         - md5sum $(find . -type f -not -path "*DEBIAN*") > "DEBIAN/md5sums"
         - cd $RUNDIR
@@ -30,7 +31,18 @@ stages:
 
 package-indigo:
     extends: .package
+    image: rcer:5000/default-ubuntu14.04:indigo-full
     variables:
         ROS_DISTRIBUTION_NAME: indigo
+        
+package-kinetic:
+    extends: .package
+    image: rcer:5000/default-ubuntu16.04:kinetic-full
+    variables:
+        ROS_DISTRIBUTION_NAME: kinetic
 
-
+package-melodic:
+    extends: .package
+    image: rcer:5000/default-ubuntu18.04:melodic-full
+    variables:
+        ROS_DISTRIBUTION_NAME: melodic

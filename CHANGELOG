@@ -1,3 +1,7 @@
+rosbag_visual_topic_filter (1.0.6) all; urgency=medium
+  * Fixed extended description
+  * Added support for 'kinetic' and 'melodic' ROS distributions
+ -- twdragon <twdragon@bmstu.ru>  Fri, 18 Oct 2019 18:13:01 +0300
 rosbag_visual_topic_filter (1.0.5) all; urgency=medium
   * .deb package building feature added
   * Testing Gitlab CI
