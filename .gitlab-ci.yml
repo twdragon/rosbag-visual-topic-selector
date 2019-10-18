@@ -50,5 +50,8 @@ package-melodic:
 
 collect:
     stage: collect
+    artifacts:
+        paths:
+            - "*.deb"
     script:
-        - ls -lah
+        - for f in *.deb ; do lintian ${f} ; done
