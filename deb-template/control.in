@@ -1,4 +1,4 @@
-Package: rosbag-visual-topic-selector
+Package: ros-ROS_DISTRIBUTION_NAME-rosbag-visual-topic-selector
 Version: VERSION_STRING
 Provides: rosbag-visual-topic-selector
 Maintainer: Andrei Vukolov <twdragon@bmstu.ru>

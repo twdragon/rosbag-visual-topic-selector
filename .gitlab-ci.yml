@@ -18,7 +18,7 @@ stages:
         - while read -r line ; do mkdir -p "${VERSIONED_DIR}/${line}" ; done < <(cat "${VERSIONED_DIR}/DEBIAN/dirs")
         - cp -v "./deb-template/control.in" "${VERSIONED_DIR}/DEBIAN/control"
         - echo "9" > "${VERSIONED_DIR}/DEBIAN/compat"
-        - sed -i -e "s/VERSION_STRING/${VERSION_STRING}/;s/ROS_DISTRIBUTION_NAME/${ROS_DISTRIBUTION_NAME}/" "${VERSIONED_DIR}/DEBIAN/control"
+        - sed -i -e "s/VERSION_STRING/${VERSION_STRING}/;s/ROS_DISTRIBUTION_NAME/${ROS_DISTRIBUTION_NAME}/g" "${VERSIONED_DIR}/DEBIAN/control"
         - cp -v "./CHANGELOG" "${VERSIONED_DIR}/usr/share/doc/rosbag-visual-topic-selector/changelog"
         - gzip --best -n "${VERSIONED_DIR}/usr/share/doc/rosbag-visual-topic-selector/changelog"
         - cp -v "./LICENSE" "${VERSIONED_DIR}/usr/share/doc/rosbag-visual-topic-selector/copyright"
