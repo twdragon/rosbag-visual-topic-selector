@@ -1,5 +1,6 @@
 stages:
     - build-deb
+    - collect
 
 .package:
     stage: build-deb
@@ -46,3 +47,8 @@ package-melodic:
     image: rcer:5000/default-ubuntu18.04:melodic-full
     variables:
         ROS_DISTRIBUTION_NAME: melodic
+
+collect:
+    stage: collect
+    script:
+        - ls -lah
