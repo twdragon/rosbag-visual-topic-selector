@@ -1,0 +1,37 @@
+stages:
+    - build-deb
+
+.package:
+    stage: build-deb
+    artifacts:
+        paths:
+            - "*.deb"
+    script:
+        - VERSION_STRING=`cat ./VERSION`"~${CI_COMMIT_SHORT_SHA}"
+        - DATE_STRING=`date +%d-%m-%Y`
+        - RUNDIR=$PWD
+        - VERSIONED_DIR="ros-${ROS_DISTRO}-${CI_PROJECT_NAME}-${VERSION_STRING}"
+        - mkdir -p "${VERSIONED_DIR}/DEBIAN"
+        - cp -v "./deb-template/dirs.in" "${VERSIONED_DIR}/DEBIAN/dirs"
+        - sed -i -e "s/ROS_DISTRO/${ROS_DISTRO}/" "${VERSIONED_DIR}/DEBIAN/dirs"
+        - while read -r line ; do mkdir -p "${VERSIONED_DIR}/${line}" ; done < <(cat "${VERSIONED_DIR}/DEBIAN/dirs")
+        - cp -v "./deb-template/control.in" "${VERSIONED_DIR}/DEBIAN/control"
+        - echo "9" > "${VERSIONED_DIR}/DEBIAN/compat"
+        - sed -i -e "s/VERSION_STRING/${VERSION_STRING}/;s/ROS_DISTRO/${ROS_DISTRO}/" "${VERSIONED_DIR}/DEBIAN/control"
+        - cp -v "./CHANGELOG" "${VERSIONED_DIR}/usr/share/doc/rosbag-visual-topic-selector/changelog"
+        - gzip --best -n "${VERSIONED_DIR}/usr/share/doc/rosbag-visual-topic-selector/changelog"
+        - cp -v "./LICENSE" "${VERSIONED_DIR}/usr/share/doc/rosbag-visual-topic-selector/copyright"
+        - cp -v "./README.md" "${VERSIONED_DIR}/usr/share/doc/rosbag-visual-topic-selector"
+        - cp -av "./rosbag_visual_topic_filter" "${VERSIONED_DIR}/opt/ros/${ROS_DISTRO}/rosbag-visual-topic-selector"
+        - cd "${VERSIONED_DIR}"
+        - md5sum $(find . -type f -not -path "*DEBIAN*") > "DEBIAN/md5sums"
+        - cd $RUNDIR
+        - fakeroot dpkg-deb --build "${VERSIONED_DIR}"
+
+package-indigo:
+    extends: .package
+    only:
+        variables:
+            - ROS_DISTRO: indigo
+
+

@@ -1,0 +1,11 @@
+Package: rosbag-visual-topic-selector
+Version: VERSION_STRING
+Provides: rosbag-visual-topic-selector
+Maintainer: Andrei Vukolov <twdragon@bmstu.ru>
+Architecture: all
+Section: ros
+Depends: whiptail, ros-ROS_DISTRO-rosbag
+Installed-Size: 20
+Priority: optional
+Description: Visual ROS bag filtering tool
+

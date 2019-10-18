@@ -1,3 +1,8 @@
+rosbag_visual_topic_filter (1.0.5) all; urgency=medium
+  * .deb package building feature added
+  * Testing Gitlab CI
+  * Added 'indigo' ROS distribution support only
+ -- twdragon <twdragon@bmstu.ru>  Fri, 18 Oct 2019 17:38:09 +0300
 rosbag_visual_topic_filter (1.0.4) all; urgency=high
   * Correction to list file CANCEL switch behaviour
   * Removed printing of selected topic list indexes
