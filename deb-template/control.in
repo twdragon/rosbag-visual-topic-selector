@@ -4,7 +4,7 @@ Provides: rosbag-visual-topic-selector
 Maintainer: Andrei Vukolov <twdragon@bmstu.ru>
 Architecture: all
 Section: ros
-Depends: whiptail, ros-ROS_DISTRO-rosbag
+Depends: whiptail, ros-ROS_DISTRIBUTION_NAME-rosbag
 Installed-Size: 20
 Priority: optional
 Description: Visual ROS bag filtering tool
