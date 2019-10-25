@@ -1,5 +1,53 @@
 #!/usr/bin/env bash
 
+function ShowHelp()
+{
+cat << EOF
+rosbag-visual-topic-selector
+
+Visual ROS topic selector for .bag files
+
+USAGE: rosbag-visual-topic-selector [OPTIONS]
+
+rosbag-visual-topic-selector is a script allowing ROS user to produce 
+    .bag files filtered by topic names. It uses simple CLI syntax and
+    list files to select which topics recorded into .bag file should 
+    be left there after filtering.
+
+COMMAND LINE OPTIONS
+
+    -h      --     Show this help and exit
+    
+    -d    <path>   Use specified path as base. The script reads .bag 
+                   files from the directory on which it is being run 
+                   by default
+
+    -t    <topic>  If the topic mentioned in argument exists in source 
+                   bag file, it will be selected in graphic interface at
+                   the moment it has being appeared. This option could be 
+                   mentioned several times for several topic names needed
+    
+    -c    <path>   This option permits to use list file where topics are 
+                   enumerated (one topic per line) to be extracted to 
+                   destination file. All mentioned topics will be selected 
+                   in graphic interface at the moment it has being appeared 
+                   if they exist in source bag file only.
+                   NOTE: without this option the script does not read existing
+                   list file by default!
+    
+    -r      --     Replace flag. The destination bag file can be replaced with
+                   new one with the same name only if this flag was specified.
+
+
+Copyright (c) 2019 Robotic Center of Education and Research, 
+    Bauman Moscow State Technical University,
+    Andrei Vukolov <twdragon@bmstu.ru>
+    (based on tool developed by Alexander Tachkov)
+    Distributed under conditions of MIT license
+EOF
+exit 0
+}
+
 which rosbag > /dev/null
 if [[ $? -ne 0 ]]
 then
@@ -18,7 +66,7 @@ HAVE_TOPIC_LIST=0
 
 FORCE_REPLACE=0
 
-while getopts ":d:t:c:r" optindex
+while getopts ":hd:t:c:r" optindex
 do
     case ${optindex} in
         d ) 
@@ -39,6 +87,9 @@ do
         r ) 
             FORCE_REPLACE=1
         ;;
+        h )
+            ShowHelp
+        ;;
         * )
             echo -e "Unknown option \"${OPTARG}\""
         ;;
@@ -48,7 +99,13 @@ done
 echo -e "Running from directory ${BASE_DIR}"
 
 cd "${BASE_DIR}"
-
+TEST_FILES_LIST=`find . -name "*.bag"`
+if [[ -z "${TEST_FILES_LIST}" ]]
+then
+    echo -e "FATAL ERROR: no bag files found in specified base directory ${BASE_DIR} Abort"
+    exit 1
+fi
+ 
 count=1
 index=0
 for f in *.bag

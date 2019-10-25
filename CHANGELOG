@@ -1,3 +1,10 @@
+rosbag-visual-topic-selector (2.0.1) all; urgency=high
+  * Fixed errors if the base directory lacks of .bag files
+  * Added online help
+  * Fixed package name and executable name
+  * Fixed CI script for Gitlab
+  * Preparations for ROS build farm
+ -- twdragon <twdragon@bmstu.ru>  Fri, 25 Oct 2019 18:50:15 +0300
 rosbag_visual_topic_filter (1.0.6) all; urgency=medium
   * Fixed extended description
   * Added support for 'kinetic' and 'melodic' ROS distributions

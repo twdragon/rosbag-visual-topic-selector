@@ -23,7 +23,7 @@ stages:
         - gzip --best -n "${VERSIONED_DIR}/usr/share/doc/rosbag-visual-topic-selector/changelog"
         - cp -v "./LICENSE" "${VERSIONED_DIR}/usr/share/doc/rosbag-visual-topic-selector/copyright"
         - cp -v "./README.md" "${VERSIONED_DIR}/usr/share/doc/rosbag-visual-topic-selector"
-        - cp -av "./rosbag_visual_topic_filter" "${VERSIONED_DIR}/opt/ros/${ROS_DISTRIBUTION_NAME}/bin/rosbag-visual-topic-selector"
+        - cp -av "./rosbag-visual-topic-selector" "${VERSIONED_DIR}/opt/ros/${ROS_DISTRIBUTION_NAME}/bin/rosbag-visual-topic-selector"
         - chmod -v 755 "${VERSIONED_DIR}/opt/ros/${ROS_DISTRIBUTION_NAME}/bin/rosbag-visual-topic-selector"
         - cd "${VERSIONED_DIR}"
         - md5sum $(find . -type f -not -path "*DEBIAN*") > "DEBIAN/md5sums"

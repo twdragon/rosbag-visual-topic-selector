@@ -4,6 +4,10 @@ This script allows [ROS](https://www.ros.org) user to produce .bag files filtere
 
 ## Usage
 
+```sh 
+rosbag-visual-topic-selector [OPTIONS]
+```
+
 ### Command line options
 
 |**Option**|**Argument**|**Meaning**|**Description**|
@@ -11,7 +15,8 @@ This script allows [ROS](https://www.ros.org) user to produce .bag files filtere
 |`-d`|path to directory|Base directory|The script reads `.bag` files from the directory on which it is being run by default. To override this, use this option|
 |`-t`|topic name|Select topic by name|If the topic mentioned in argument exists in source bag file, it will be selected in [graphic interface](#graphic-user-interface) at the moment it has being appeared. This option could be mentioned several times for several topic names|
 |`-c`|path to file|Topic list file|This option permits to use list file where topics are enumerated (one topic per line) to be extracted to destination file. All mentioned topics will be selected in [graphic interface](#graphic-user-interface) at the moment it has being appeared if they exist in source bag file|
-|`-r`|  |Replace flag|The destination bag file can be replaced with new one with the same name only if this flag is specified|
+|`-r`|  |Replace flag|The destination bag file can be replaced with new one with the same name only if this flag was specified|
+|`-h`|  |   |Shows online help|
 
 ### Graphic user interface
 
