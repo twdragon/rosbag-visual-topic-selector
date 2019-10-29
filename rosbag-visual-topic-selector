@@ -231,18 +231,20 @@ fi
 
 selected_topic_list=(${selected_topics})
 
-whiptail --yesno --defaultno --title "Topic list preservation" "Do you want to save the list of selected topics" 0 0 3>&1 1>&2 2>&3
+whiptail --yesno --defaultno --title "Topic list preservation" "Do you want to save/replace the list of selected topics" 0 0 3>&1 1>&2 2>&3
 save_topic_list=$?
+
 if [[ ${save_topic_list} -eq 0 ]]
 then
     NEW_TOPIC_LIST_FILE=`whiptail --title  "File name for topic list" --inputbox  "Please enter filename for topic list" 10 60 "${TOPIC_LIST_FILE}" 3>&1 1>&2 2>&3`
     if [[ $? -eq 0 ]]
     then
-        if [[ -z "${NEW_TOPIC_LIST_FILE}" || "${NEW_TOPIC_LIST_FILE}" == "${TOPIC_LIST_FILE}" ]]
+        if [[ -z "${NEW_TOPIC_LIST_FILE}" || "${NEW_TOPIC_LIST_FILE}" == "${SELECTED_BAG_NAME}" || "${NEW_TOPIC_LIST_FILE}" == "${FILTERED_BAG_NAME}" ]]
         then
             echo -e "WARNING: wrong filename for topic list to save. Saving to default ${TOPIC_LIST_FILE}"
         else
             TOPIC_LIST_FILE="${NEW_TOPIC_LIST_FILE}"
+            echo -e "Saving topic list to ${TOPIC_LIST_FILE}"
         fi
         if [[ -f "${TOPIC_LIST_FILE}" ]]
         then
