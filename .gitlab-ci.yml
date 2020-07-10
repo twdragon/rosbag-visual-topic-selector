@@ -48,6 +48,12 @@ package-melodic:
     variables:
         ROS_DISTRIBUTION_NAME: melodic
 
+package-noetic:
+    extends: .package
+    image: rcer:5000/default-ubuntu18.04:melodic-full
+    variables:
+        ROS_DISTRIBUTION_NAME: noetic
+
 collect:
     stage: collect
     artifacts:
